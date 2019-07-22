@@ -34,5 +34,32 @@ namespace Business
             employee.UserType = employeeDAO.UserType;
             return employee;
         }
+
+        public List<dynamic> GetEmployees()
+        {
+            List<Employee> employeesDAO = _employeeDAO.GetEmployees();
+            List<dynamic> employees = new List<dynamic>();
+            //for (int i = 0; i < employeesDAO.Count; i++)
+            //{
+            //    employees[i].Id = employeesDAO[i].Id;
+            //    employees[i].LastName = employeesDAO[i].LastName;
+            //    employees[i].FirstName = employeesDAO[i].FirstName;
+            //    employees[i].TaskId = employeesDAO[i].TaskId;
+            //    employees[i].UserType = employeesDAO[i].UserType;
+            //}
+
+            foreach(var employee in employeesDAO)
+            {
+                dynamic e = new ExpandoObject();
+                e.Id = employee.Id;
+                e.LastName = employee.LastName;
+                e.FirstName = employee.FirstName;
+                e.TaskId = employee.TaskId;
+                e.UserType = employee.UserType;
+                employees.Add(e);
+            }
+
+            return employees;
+        }
     }
 }

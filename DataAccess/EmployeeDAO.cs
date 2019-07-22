@@ -23,7 +23,6 @@ namespace DataAccess
                 {
                     while (reader.Read())
                     {
-                        //employee.Id = Int32.Parse(reader["Id"].ToString());
                         employee.Id = id;
                         employee.LastName = reader["LastName"].ToString();
                         employee.FirstName = reader["FirstName"].ToString();
@@ -34,6 +33,34 @@ namespace DataAccess
                 connection.Close();
             }
             return employee;
+        }
+
+        public List<Employee> GetEmployees()
+        {
+            var employees = new List<Employee>();
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "select * from Employee where UserType = 2";
+                SqlCommand command = new SqlCommand(query, connection);
+                using(SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Employee employee = new Employee
+                        {
+                            Id = Int32.Parse(reader["Id"].ToString()),
+                            LastName = reader["LastName"].ToString(),
+                            FirstName = reader["FirstName"].ToString(),
+                            TaskId = Int32.Parse(reader["TaskId"].ToString()),
+                            UserType = Int32.Parse(reader["UserType"].ToString())
+                        };
+                        employees.Add(employee);
+                    }
+                }
+                connection.Close();
+            }
+            return employees;
         }
     }
 }
