@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskApp", "TaskApp\TaskApp.csproj", "{30E78687-BA63-48E8-8A76-66091DFC7FB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{C6B91AF4-94C0-4569-84D9-EC17428B43E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{4A7273FC-AA24-46C2-A0FD-9B6D23E99534}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{30E78687-BA63-48E8-8A76-66091DFC7FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30E78687-BA63-48E8-8A76-66091DFC7FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30E78687-BA63-48E8-8A76-66091DFC7FB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6B91AF4-94C0-4569-84D9-EC17428B43E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6B91AF4-94C0-4569-84D9-EC17428B43E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6B91AF4-94C0-4569-84D9-EC17428B43E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6B91AF4-94C0-4569-84D9-EC17428B43E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A7273FC-AA24-46C2-A0FD-9B6D23E99534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A7273FC-AA24-46C2-A0FD-9B6D23E99534}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A7273FC-AA24-46C2-A0FD-9B6D23E99534}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A7273FC-AA24-46C2-A0FD-9B6D23E99534}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
