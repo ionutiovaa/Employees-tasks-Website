@@ -26,6 +26,21 @@ namespace TaskApp.Controllers
             return View(employee);
         }
 
+        public ActionResult GetEmployeeByName(string lastName, string firstName)
+        {
+            EmployeeBUS service = new EmployeeBUS();
+            var employeeBUS = service.GetEmployeeByName(lastName, firstName);
+            EmployeeModelForView forView = new EmployeeModelForView
+            {
+                LastName = lastName,
+                FirstName = firstName,
+                NumberOfHours = employeeBUS.NumberOfHours,
+                Description = employeeBUS.Description,
+                ProjectName = employeeBUS.ProjectName
+            };
+            return View(forView);
+        }
+
         public ActionResult GetEmployees()
         {
             EmployeeBUS service = new EmployeeBUS();

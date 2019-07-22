@@ -179,6 +179,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\EmployeeModelForView.cs" />
     <Compile Include="Models\Employees.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -416,6 +417,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Employees\GetEmployee.cshtml" />
     <Content Include="Views\Employees\GetEmployees.cshtml" />
+    <Content Include="Views\Employees\GetEmployeeByName.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

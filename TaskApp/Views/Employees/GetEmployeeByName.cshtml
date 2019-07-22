@@ -1,0 +1,25 @@
+﻿@model TaskApp.Models.EmployeeModelForView
+@{
+    ViewBag.Title = "GetEmployeeByName";
+}
+
+<h2>@Model.FirstName @Model.LastName</h2>
+
+<table id="employee" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Task</th>
+            <th>Hours</th>
+            <th>Project</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.FirstName @Model.LastName</td>
+            <td>@Model.Description</td>
+            <td>@Model.NumberOfHours</td>
+            <td>@Model.ProjectName</td>
+        </tr>
+    </tbody>
+</table>

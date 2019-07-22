@@ -4,23 +4,30 @@
     ViewBag.Title = "Employees";
 }
 
-    <h2>Employees</h2>
+    <h2>Employees</h2><br />
 
 <table id="employees" class="table table-bordered table-hover">
     <thead>
         <tr>
-            <th>Last Name</th>
-            <th>First Name</th>
+            <th>Employee</th>
         </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+        @foreach (var employee in Model.EmployeesList)
+        {
+            <tr>
+                <td>@Html.ActionLink(employee.LastName + " " + employee.FirstName, "GetEmployeeByName", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName }, null)</td>
+                
+            </tr>
+        }
+    </tbody>
 </table>
 
 @section scripts
 {
     <script>
-        //$(document).ready(function () {
-        //    var table = $("employees")
-        //})
+        $(document).ready(function () {
+            var table = $("employees").DataTable();
+        })
     </script>
 }
