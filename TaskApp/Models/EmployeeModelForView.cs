@@ -11,6 +11,8 @@ namespace TaskApp.Models
 
         public string FirstName { get; set; }
 
+        public string TaskName { get; set; }
+
         public string Description { get; set; }
 
         public float NumberOfHours { get; set; }

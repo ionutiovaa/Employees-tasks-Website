@@ -1,6 +1,7 @@
 ﻿using Business;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -26,19 +27,44 @@ namespace TaskApp.Controllers
             return View(employee);
         }
 
+        public ActionResult NewEmployee()
+        {
+            return View();
+        }
+
+        public ActionResult AddEmployee(Employee employee)
+        {
+            dynamic e = new ExpandoObject();
+            e.FirstName = employee.FirstName;
+            e.LastName = employee.LastName;
+            if (employee.UserType.Equals("Admin"))
+                e.UserType = 1;
+            else e.UserType = 2;
+            EmployeeBUS service = new EmployeeBUS();
+            service.AddEmployee(e);
+            return View("GetEmployees");
+        }
+
         public ActionResult GetEmployeeByName(string lastName, string firstName)
         {
             EmployeeBUS service = new EmployeeBUS();
             var employeeBUS = service.GetEmployeeByName(lastName, firstName);
-            EmployeeModelForView forView = new EmployeeModelForView
+            EmployeesInView inView = new EmployeesInView { EmployeesForView = new List<EmployeeModelForView>() };
+            foreach(var e in employeeBUS)
             {
-                LastName = lastName,
-                FirstName = firstName,
-                NumberOfHours = employeeBUS.NumberOfHours,
-                Description = employeeBUS.Description,
-                ProjectName = employeeBUS.ProjectName
-            };
-            return View(forView);
+                EmployeeModelForView forView = new EmployeeModelForView
+                {
+                    LastName = lastName,
+                    FirstName = firstName,
+                    NumberOfHours = e.NumberOfHours,
+                    TaskName = e.TaskName,
+                    Description = e.Description,
+                    ProjectName = e.ProjectName
+                };
+                inView.EmployeesForView.Add(forView);
+            }
+            
+            return View(inView);
         }
 
         public ActionResult GetEmployees()

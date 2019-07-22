@@ -181,6 +181,7 @@
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\EmployeeModelForView.cs" />
     <Compile Include="Models\Employees.cs" />
+    <Compile Include="Models\EmployeesInView.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -418,6 +419,7 @@
     <Content Include="Views\Employees\GetEmployee.cshtml" />
     <Content Include="Views\Employees\GetEmployees.cshtml" />
     <Content Include="Views\Employees\GetEmployeeByName.cshtml" />
+    <Content Include="Views\Employees\NewEmployee.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

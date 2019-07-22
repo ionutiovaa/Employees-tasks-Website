@@ -1,25 +1,27 @@
-﻿@model TaskApp.Models.EmployeeModelForView
+﻿@model TaskApp.Models.EmployeesInView
 @{
     ViewBag.Title = "GetEmployeeByName";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@Model.FirstName @Model.LastName</h2>
+<h2>@Model.EmployeesForView[0].FirstName @Model.EmployeesForView[0].LastName</h2><br />
 
 <table id="employee" class="table table-bordered table-hover">
     <thead>
         <tr>
-            <th>Name</th>
             <th>Task</th>
             <th>Hours</th>
             <th>Project</th>
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>@Model.FirstName @Model.LastName</td>
-            <td>@Model.Description</td>
-            <td>@Model.NumberOfHours</td>
-            <td>@Model.ProjectName</td>
-        </tr>
+        @foreach (var e in Model.EmployeesForView)
+        {
+            <tr>
+                <td>@e.TaskName @e.Description</td>
+                <td>@e.NumberOfHours</td>
+                <td>@e.ProjectName</td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -2,14 +2,19 @@
 
 @{
     ViewBag.Title = "Employees";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-    <h2>Employees</h2><br />
+    <h2>Employees</h2>
+
+    <p>@Html.ActionLink("New User", "NewEmployee", "Employees", null, new { @class = "btn btn-primary" })</p><br />
 
 <table id="employees" class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>Employee</th>
+            <th>Edit</th>
+            <th>Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -17,7 +22,8 @@
         {
             <tr>
                 <td>@Html.ActionLink(employee.LastName + " " + employee.FirstName, "GetEmployeeByName", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName }, null)</td>
-                
+                <td>@Html.ActionLink("Edit", "EditEmployee", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName })</td>
+                <td>@Html.ActionLink("Delete", "DeleteEmployee", "Employees", null)</td>
             </tr>
         }
     </tbody>

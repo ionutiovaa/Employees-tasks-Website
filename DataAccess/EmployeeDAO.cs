@@ -27,7 +27,6 @@ namespace DataAccess
                         employee.Id = id;
                         employee.LastName = reader["LastName"].ToString();
                         employee.FirstName = reader["FirstName"].ToString();
-                        employee.TaskId = Int32.Parse(reader["TaskId"].ToString());
                         employee.UserType = Int32.Parse(reader["UserType"].ToString());
                     }
                 }
@@ -36,13 +35,16 @@ namespace DataAccess
             return employee;
         }
 
-        public dynamic GetEmployeeByName(string lastName, string firstName)
+        public List<dynamic> GetEmployeeByName(string lastName, string firstName)
         {
-            Employee employee = new Employee();
-            Job task = new Job();
-            Project project = new Project();
+            List<Job> jobs = new List<Job>();
+            List<Project> projects = new List<Project>();
+
+            //Employee employee = new Employee();
+            List<dynamic> tasks = new List<dynamic>();
             using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
             {
+                Employee employee = new Employee();
                 connection.Open();
                 string query1 = "select * from Employee where LastName LIKE @lastName and FirstName LIKE @FirstName";
                 SqlCommand command1 = new SqlCommand(query1, connection);
@@ -55,41 +57,88 @@ namespace DataAccess
                         employee.Id = Int32.Parse(reader["Id"].ToString());
                         employee.FirstName = firstName;
                         employee.LastName = lastName;
-                        employee.TaskId = Int32.Parse(reader["TaskId"].ToString());
                         employee.UserType = Int32.Parse(reader["UserType"].ToString());
                     }
                 }
-                string query2 = "select * from Task where Id = @id";
+                //Job job = new Job();
+                string query2 = "select * from Task where EmployeeId = @id";
                 SqlCommand command2 = new SqlCommand(query2, connection);
-                command2.Parameters.AddWithValue("@id", employee.TaskId);
+                command2.Parameters.AddWithValue("@id", employee.Id);
                 using (SqlDataReader reader1 = command2.ExecuteReader())
                 {
                     while (reader1.Read())
                     {
-                        task.Id = employee.TaskId;
-                        task.Name = reader1["Name"].ToString();
-                        task.NumberOfHours = float.Parse(reader1["NumberOfHours"].ToString());
-                        task.ProjectId = Int32.Parse(reader1["ProjectId"].ToString());
+                        Job job = new Job
+                        {
+                            Id = Int32.Parse(reader1["Id"].ToString()),
+                            Name = reader1["Name"].ToString(),
+                            Description = reader1["Description"].ToString(),
+                            NumberOfHours = float.Parse(reader1["NumberOfHours"].ToString()),
+                            EmployeeId = employee.Id,
+                            ProjectId = Int32.Parse(reader1["ProjectId"].ToString())
+                        };
+                        jobs.Add(job);
+
+                        //task.LastName = employee.LastName;
+                        //task.FirstName = employee.FirstName;
+                        ////task.Id = Int32.Parse(reader1["Id"].ToString());
+                        //task.TaskName = reader1["Name"].ToString();
+                        //task.Description = reader1["Description"].ToString();
+                        //task.NumberOfHours = float.Parse(reader1["NumberOfHours"].ToString());
+                        //task.EmployeeId = Int32.Parse(reader1["EmployeeId"].ToString());
+                        //task.ProjectId = Int32.Parse(reader1["ProjectId"].ToString());
+                        //tasks.Add(task);
                     }
                 }
-                string query3 = "select * from Project where Id = @idp";
-                SqlCommand command3 = new SqlCommand(query3, connection);
-                command3.Parameters.AddWithValue("@idp", task.ProjectId);
-                using (SqlDataReader reader2 = command3.ExecuteReader())
+                foreach(var j in jobs)
                 {
-                    while (reader2.Read())
+                    string query3 = "select * from Project where Id = @idp";
+                    SqlCommand command3 = new SqlCommand(query3, connection);
+                    command3.Parameters.AddWithValue("@idp", j.ProjectId);
+                    using (SqlDataReader reader2 = command3.ExecuteReader())
                     {
-                        project.Id = task.ProjectId;
-                        project.Name = reader2["Name"].ToString();
+                        while (reader2.Read())
+                        {
+                            Project project = new Project
+                            {
+                                Id = j.ProjectId,
+                                Name = reader2["Name"].ToString()
+                            };
+                            projects.Add(project);
+                            dynamic task = new ExpandoObject();
+                            task.LastName = employee.LastName;
+                            task.FirstName = employee.FirstName;
+                            task.TaskName = j.Name;
+                            task.Description = j.Description;
+                            task.NumberOfHours = j.NumberOfHours;
+                            task.ProjectName = reader2["Name"].ToString();
+                            tasks.Add(task);
+                        }
                     }
                 }
                 connection.Close();
             }
-            dynamic toReturn = new ExpandoObject();
-            toReturn.Description = task.Name;
-            toReturn.NumberOfHours = task.NumberOfHours;
-            toReturn.ProjectName = project.Name;
-            return toReturn;
+            return tasks;
+            //dynamic toReturn = new ExpandoObject();
+            //toReturn.Description = task.Name;
+            //toReturn.NumberOfHours = task.NumberOfHours;
+            //toReturn.ProjectName = project.Name;
+            //return toReturn;
+        }
+
+        public void AddEmployee(dynamic employee)
+        {
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "insert into Employee(LastName, FirstName, UserType) values (@lastName, @firstName, @userType);";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@lastName", employee.LastName);
+                command.Parameters.AddWithValue("@firstName", employee.FirstName);
+                command.Parameters.AddWithValue("@userType", employee.UserType);
+                SqlDataReader reader = command.ExecuteReader();
+                connection.Close();
+            }
         }
 
         public List<Employee> GetEmployees()
@@ -109,7 +158,6 @@ namespace DataAccess
                             Id = Int32.Parse(reader["Id"].ToString()),
                             LastName = reader["LastName"].ToString(),
                             FirstName = reader["FirstName"].ToString(),
-                            TaskId = Int32.Parse(reader["TaskId"].ToString()),
                             UserType = Int32.Parse(reader["UserType"].ToString())
                         };
                         employees.Add(employee);

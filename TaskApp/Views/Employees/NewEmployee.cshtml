@@ -1,0 +1,27 @@
+﻿@model TaskApp.Models.Employee
+
+@{
+    ViewBag.Title = "NewEmployee";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Employee</h2><br />
+
+@using (Html.BeginForm("AddEmployee", "Employees"))
+{
+    <div class="form-group">
+        @Html.LabelFor(e => e.FirstName)
+        @Html.TextBoxFor(e => e.FirstName, new { @class = "form-control" })
+    </div><br />
+    <div class="form-group">
+        @Html.LabelFor(e => e.LastName)
+        @Html.TextBoxFor(e => e.LastName, new { @class = "form-control" })
+    </div><br />
+          <div class="form-group">
+              @Html.LabelFor(e => e.UserType)
+              @Html.DropDownListFor(e => e.UserType, new SelectList(
+                    new List<string> { "Admin", "User"}
+                 ), "Select User Type", new { @class = "form-control" })
+          </div><br />
+
+}

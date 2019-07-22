@@ -16,6 +16,8 @@ namespace DataAccess.Entity
 
         public float NumberOfHours { get; set; }
 
+        public int EmployeeId { get; set; }
+
         public int ProjectId { get; set; }
     }
 }

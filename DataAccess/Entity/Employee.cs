@@ -14,8 +14,6 @@ namespace DataAccess.Entity
 
         public string FirstName { get; set; }
 
-        public int TaskId { get; set; }
-
         public int UserType { get; set; }
     }
 }
