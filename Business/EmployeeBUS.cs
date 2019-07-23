@@ -44,14 +44,14 @@ namespace Business
             _employeeDAO.DeleteEmployee(lastName, firstName);
         }
 
-        public void EditEmployee(int id, string lastName, string firstName, int userType)
+        public void EditEmployee(int id, string lastName, string firstName, string username, string password, int userType)
         {
-            _employeeDAO.EditEmployee(id, lastName, firstName, userType);
+            _employeeDAO.EditEmployee(id, lastName, firstName, username, password, userType);
         }
 
-        public int GetIdEmployee(string lastName, string firstName)
+        public int GetIdEmployee(string username, string password)
         {
-            return _employeeDAO.GetIdEmployee(lastName, firstName);
+            return _employeeDAO.GetIdEmployee(username, password);
         }
 
         public List<dynamic> GetEmployees()
@@ -65,6 +65,8 @@ namespace Business
                 e.Id = employee.Id;
                 e.LastName = employee.LastName;
                 e.FirstName = employee.FirstName;
+                e.Username = employee.Username;
+                e.Password = employee.Password;
                 e.UserType = employee.UserType;
                 employees.Add(e);
             }

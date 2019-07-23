@@ -22,7 +22,7 @@
         {
             <tr>
                 <td>@Html.ActionLink(employee.LastName + " " + employee.FirstName, "GetEmployeeByName", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName }, null)</td>
-                <td>@Html.ActionLink("Edit", "GetIdEmployee", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName, userType = employee.UserType }, null)</td>
+                <td>@Html.ActionLink("Edit", "GetIdEmployee", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName, username = employee.Username, password = employee.Password, userType = employee.UserType }, null)</td>
                 <td>@Html.ActionLink("Delete", "DeleteEmployee", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName}, null)</td>
             </tr>
         }

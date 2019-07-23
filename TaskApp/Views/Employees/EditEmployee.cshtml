@@ -19,6 +19,16 @@
         @Html.ValidationMessageFor(e => e.LastName)
     </div><br />
     <div class="form-group">
+        @Html.LabelFor(e => e.Username)
+        @Html.TextBoxFor(e => e.Username, new { @class = "form-control" })
+        @Html.ValidationMessageFor(e => e.Username)
+    </div><br />
+    <div class="form-group">
+        @Html.LabelFor(e => e.Password)
+        @Html.TextBoxFor(e => e.Password, new { @class = "form-control", @type = "password"})
+        @Html.ValidationMessageFor(e => e.Password)
+    </div><br />
+    <div class="form-group">
         @Html.LabelFor(e => e.UserType)
         @Html.DropDownListFor(e => e.UserType, new SelectList(
             new List<string> { "Admin", "User" }

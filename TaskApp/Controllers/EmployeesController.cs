@@ -37,6 +37,8 @@ namespace TaskApp.Controllers
             dynamic e = new ExpandoObject();
             e.FirstName = employee.FirstName;
             e.LastName = employee.LastName;
+            e.Username = employee.Username;
+            e.Password = employee.Password;
             if (employee.UserType.Equals("Admin"))
                 e.UserType = 1;
             else e.UserType = 2;
@@ -66,22 +68,23 @@ namespace TaskApp.Controllers
             return View("GetEmployees", employees);
         }
 
-        public ActionResult GetIdEmployee(string lastName, string firstName, string userType)
+        public ActionResult GetIdEmployee(string lastName, string firstName, string username, string password, string userType)
         {
             EmployeeBUS service = new EmployeeBUS();
-            int id = service.GetIdEmployee(lastName, firstName);
-            Employee employee = new Employee { Id = id, LastName = lastName, FirstName = firstName, UserType = userType };
+            int id = service.GetIdEmployee(username, password);
+            Employee employee = new Employee { Id = id, LastName = lastName, FirstName = firstName, Username = username, Password = password, UserType = userType };
             return View("EditEmployee", employee);
         }
 
-        public ActionResult EditEmployee(int id, string lastName, string firstName, string userType)
+        
+        public ActionResult EditEmployee(int id, string lastName, string firstName, string username, string password, string userType)
         {
             EmployeeBUS service = new EmployeeBUS();
             int userT;
             if (userType.Equals("Admin"))
                 userT = 1;
             else userT = 2;
-            service.EditEmployee(id, lastName, firstName, userT);
+            service.EditEmployee(id, lastName, firstName, username, password, userT);
             var employeesBUS = service.GetEmployees();
             List<Employee> employees = new List<Employee>();
             foreach (var employee in employeesBUS)
@@ -133,7 +136,7 @@ namespace TaskApp.Controllers
             List<Employee> employees = new List<Employee>();
             foreach (var employee in employeesBUS)
             {
-                Employee e = new Employee { FirstName = employee.FirstName, LastName = employee.LastName };
+                Employee e = new Employee { FirstName = employee.FirstName, LastName = employee.LastName, Username = employee.Username, Password = employee.Password };
                 employees.Add(e);
             }
             return View(employees);

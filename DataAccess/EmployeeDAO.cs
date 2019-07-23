@@ -113,10 +113,12 @@ namespace DataAccess
             using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
             {
                 connection.Open();
-                string query = "insert into Employee(LastName, FirstName, UserType) values (@lastName, @firstName, @userType);";
+                string query = "insert into Employee(LastName, FirstName, Username, Password, UserType) values (@lastName, @firstName, @username, @password, @userType);";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@lastName", employee.LastName);
                 command.Parameters.AddWithValue("@firstName", employee.FirstName);
+                command.Parameters.AddWithValue("@username", employee.Username);
+                command.Parameters.AddWithValue("@password", employee.Password);
                 command.Parameters.AddWithValue("@userType", employee.UserType);
                 SqlDataReader reader = command.ExecuteReader();
                 connection.Close();
@@ -137,15 +139,17 @@ namespace DataAccess
             }
         }
 
-        public void EditEmployee(int id, string lastName, string firstName, int userType)
+        public void EditEmployee(int id, string lastName, string firstName, string username, string password, int userType)
         {
             using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
             {
                 connection.Open();
-                string query = "update Employee set LastName = @lastname, FirstName = @firstName, UserType = @userType where Id = @id;";
+                string query = "update Employee set LastName = @lastname, FirstName = @firstName, Username = @username, Password = @password, UserType = @userType where Id = @id;";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@lastName", lastName);
                 command.Parameters.AddWithValue("@firstName", firstName);
+                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@password", password);
                 command.Parameters.AddWithValue("@userType", userType);
                 command.Parameters.AddWithValue("@id", id);
                 command.ExecuteNonQuery();
@@ -153,16 +157,16 @@ namespace DataAccess
             }
         }
 
-        public int GetIdEmployee(string lastName, string firstName)
+        public int GetIdEmployee(string username, string password)
         {
             int id = 0;
             using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
             {
                 connection.Open();
-                string query = "select Id from Employee where LastName LIKE @lastName and FirstName LIKE @firstName;";
+                string query = "select Id from Employee where Username LIKE @username and Password LIKE @password;";
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@lastName", lastName);
-                command.Parameters.AddWithValue("@firstName", firstName);
+                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@password", password);
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -190,6 +194,8 @@ namespace DataAccess
                             Id = Int32.Parse(reader["Id"].ToString()),
                             LastName = reader["LastName"].ToString(),
                             FirstName = reader["FirstName"].ToString(),
+                            Username = reader["Username"].ToString(),
+                            Password = reader["Password"].ToString(),
                             UserType = Int32.Parse(reader["UserType"].ToString())
                         };
                         employees.Add(employee);
