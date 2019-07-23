@@ -420,6 +420,7 @@
     <Content Include="Views\Employees\GetEmployees.cshtml" />
     <Content Include="Views\Employees\GetEmployeeByName.cshtml" />
     <Content Include="Views\Employees\NewEmployee.cshtml" />
+    <Content Include="Views\Employees\EditEmployee.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -42,7 +42,54 @@ namespace TaskApp.Controllers
             else e.UserType = 2;
             EmployeeBUS service = new EmployeeBUS();
             service.AddEmployee(e);
-            return View("GetEmployees");
+            var employeesBUS = service.GetEmployees();
+            Employees employees = new Employees { EmployeesList = new List<Employee>() };
+            foreach (var emp in employeesBUS)
+            {
+                Employee em = new Employee { FirstName = emp.FirstName, LastName = emp.LastName };
+                employees.EmployeesList.Add(em);
+            }
+            return View("GetEmployees", employees);
+        }
+
+        public ActionResult DeleteEmployee(string lastName, string firstName)
+        {
+            EmployeeBUS service = new EmployeeBUS();
+            service.DeleteEmployee(lastName, firstName);
+            var employeesBUS = service.GetEmployees();
+            Employees employees = new Employees { EmployeesList = new List<Employee>() };
+            foreach (var emp in employeesBUS)
+            {
+                Employee em = new Employee { FirstName = emp.FirstName, LastName = emp.LastName };
+                employees.EmployeesList.Add(em);
+            }
+            return View("GetEmployees", employees);
+        }
+
+        public ActionResult GetIdEmployee(string lastName, string firstName, string userType)
+        {
+            EmployeeBUS service = new EmployeeBUS();
+            int id = service.GetIdEmployee(lastName, firstName);
+            Employee employee = new Employee { Id = id, LastName = lastName, FirstName = firstName, UserType = userType };
+            return View("EditEmployee", employee);
+        }
+
+        public ActionResult EditEmployee(int id, string lastName, string firstName, string userType)
+        {
+            EmployeeBUS service = new EmployeeBUS();
+            int userT;
+            if (userType.Equals("Admin"))
+                userT = 1;
+            else userT = 2;
+            service.EditEmployee(id, lastName, firstName, userT);
+            var employeesBUS = service.GetEmployees();
+            Employees employees = new Employees { EmployeesList = new List<Employee>() };
+            foreach (var emp in employeesBUS)
+            {
+                Employee em = new Employee { FirstName = emp.FirstName, LastName = emp.LastName };
+                employees.EmployeesList.Add(em);
+            }
+            return View("GetEmployees", employees);
         }
 
         public ActionResult GetEmployeeByName(string lastName, string firstName)

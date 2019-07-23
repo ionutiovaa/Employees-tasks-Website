@@ -22,8 +22,8 @@
         {
             <tr>
                 <td>@Html.ActionLink(employee.LastName + " " + employee.FirstName, "GetEmployeeByName", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName }, null)</td>
-                <td>@Html.ActionLink("Edit", "EditEmployee", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName })</td>
-                <td>@Html.ActionLink("Delete", "DeleteEmployee", "Employees", null)</td>
+                <td>@Html.ActionLink("Edit", "GetIdEmployee", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName, userType = employee.UserType }, null)</td>
+                <td>@Html.ActionLink("Delete", "DeleteEmployee", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName}, null)</td>
             </tr>
         }
     </tbody>

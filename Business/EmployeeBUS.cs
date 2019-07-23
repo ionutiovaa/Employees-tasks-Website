@@ -39,6 +39,21 @@ namespace Business
             _employeeDAO.AddEmployee(employee);
         }
 
+        public void DeleteEmployee(string lastName, string firstName)
+        {
+            _employeeDAO.DeleteEmployee(lastName, firstName);
+        }
+
+        public void EditEmployee(int id, string lastName, string firstName, int userType)
+        {
+            _employeeDAO.EditEmployee(id, lastName, firstName, userType);
+        }
+
+        public int GetIdEmployee(string lastName, string firstName)
+        {
+            return _employeeDAO.GetIdEmployee(lastName, firstName);
+        }
+
         public List<dynamic> GetEmployees()
         {
             List<Employee> employeesDAO = _employeeDAO.GetEmployees();

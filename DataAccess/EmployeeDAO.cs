@@ -39,8 +39,6 @@ namespace DataAccess
         {
             List<Job> jobs = new List<Job>();
             List<Project> projects = new List<Project>();
-
-            //Employee employee = new Employee();
             List<dynamic> tasks = new List<dynamic>();
             using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
             {
@@ -60,7 +58,6 @@ namespace DataAccess
                         employee.UserType = Int32.Parse(reader["UserType"].ToString());
                     }
                 }
-                //Job job = new Job();
                 string query2 = "select * from Task where EmployeeId = @id";
                 SqlCommand command2 = new SqlCommand(query2, connection);
                 command2.Parameters.AddWithValue("@id", employee.Id);
@@ -78,16 +75,6 @@ namespace DataAccess
                             ProjectId = Int32.Parse(reader1["ProjectId"].ToString())
                         };
                         jobs.Add(job);
-
-                        //task.LastName = employee.LastName;
-                        //task.FirstName = employee.FirstName;
-                        ////task.Id = Int32.Parse(reader1["Id"].ToString());
-                        //task.TaskName = reader1["Name"].ToString();
-                        //task.Description = reader1["Description"].ToString();
-                        //task.NumberOfHours = float.Parse(reader1["NumberOfHours"].ToString());
-                        //task.EmployeeId = Int32.Parse(reader1["EmployeeId"].ToString());
-                        //task.ProjectId = Int32.Parse(reader1["ProjectId"].ToString());
-                        //tasks.Add(task);
                     }
                 }
                 foreach(var j in jobs)
@@ -119,11 +106,6 @@ namespace DataAccess
                 connection.Close();
             }
             return tasks;
-            //dynamic toReturn = new ExpandoObject();
-            //toReturn.Description = task.Name;
-            //toReturn.NumberOfHours = task.NumberOfHours;
-            //toReturn.ProjectName = project.Name;
-            //return toReturn;
         }
 
         public void AddEmployee(dynamic employee)
@@ -139,6 +121,56 @@ namespace DataAccess
                 SqlDataReader reader = command.ExecuteReader();
                 connection.Close();
             }
+        }
+
+        public void DeleteEmployee(string lastName, string firstName)
+        {
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "delete from Employee where LastName LIKE @lastName and FirstName LIKE @firstName;";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@lastName", lastName);
+                command.Parameters.AddWithValue("@firstName", firstName);
+                SqlDataReader reader = command.ExecuteReader();
+                connection.Close();
+            }
+        }
+
+        public void EditEmployee(int id, string lastName, string firstName, int userType)
+        {
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "update Employee set LastName = @lastname, FirstName = @firstName, UserType = @userType where Id = @id;";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@lastName", lastName);
+                command.Parameters.AddWithValue("@firstName", firstName);
+                command.Parameters.AddWithValue("@userType", userType);
+                command.Parameters.AddWithValue("@id", id);
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+
+        public int GetIdEmployee(string lastName, string firstName)
+        {
+            int id = 0;
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "select Id from Employee where LastName LIKE @lastName and FirstName LIKE @firstName;";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@lastName", lastName);
+                command.Parameters.AddWithValue("@firstName", firstName);
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    id = Int32.Parse(reader["Id"].ToString());
+                }
+                connection.Close();
+            }
+            return id;
         }
 
         public List<Employee> GetEmployees()
