@@ -1,4 +1,4 @@
-﻿@model TaskApp.Models.Employees
+﻿@model IEnumerable<TaskApp.Models.Employee>
 
 @{
     ViewBag.Title = "Employees";
@@ -18,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var employee in Model.EmployeesList)
+        @foreach (var employee in Model)
         {
             <tr>
                 <td>@Html.ActionLink(employee.LastName + " " + employee.FirstName, "GetEmployeeByName", "Employees", new { lastName = employee.LastName, firstName = employee.FirstName }, null)</td>

@@ -43,11 +43,11 @@ namespace TaskApp.Controllers
             EmployeeBUS service = new EmployeeBUS();
             service.AddEmployee(e);
             var employeesBUS = service.GetEmployees();
-            Employees employees = new Employees { EmployeesList = new List<Employee>() };
-            foreach (var emp in employeesBUS)
+            List<Employee> employees = new List<Employee>();
+            foreach (var empl in employeesBUS)
             {
-                Employee em = new Employee { FirstName = emp.FirstName, LastName = emp.LastName };
-                employees.EmployeesList.Add(em);
+                Employee em = new Employee { FirstName = empl.FirstName, LastName = empl.LastName };
+                employees.Add(em);
             }
             return View("GetEmployees", employees);
         }
@@ -57,11 +57,11 @@ namespace TaskApp.Controllers
             EmployeeBUS service = new EmployeeBUS();
             service.DeleteEmployee(lastName, firstName);
             var employeesBUS = service.GetEmployees();
-            Employees employees = new Employees { EmployeesList = new List<Employee>() };
-            foreach (var emp in employeesBUS)
+            List<Employee> employees = new List<Employee>();
+            foreach (var employee in employeesBUS)
             {
-                Employee em = new Employee { FirstName = emp.FirstName, LastName = emp.LastName };
-                employees.EmployeesList.Add(em);
+                Employee e = new Employee { FirstName = employee.FirstName, LastName = employee.LastName };
+                employees.Add(e);
             }
             return View("GetEmployees", employees);
         }
@@ -83,11 +83,11 @@ namespace TaskApp.Controllers
             else userT = 2;
             service.EditEmployee(id, lastName, firstName, userT);
             var employeesBUS = service.GetEmployees();
-            Employees employees = new Employees { EmployeesList = new List<Employee>() };
-            foreach (var emp in employeesBUS)
+            List<Employee> employees = new List<Employee>();
+            foreach (var employee in employeesBUS)
             {
-                Employee em = new Employee { FirstName = emp.FirstName, LastName = emp.LastName };
-                employees.EmployeesList.Add(em);
+                Employee e = new Employee { FirstName = employee.FirstName, LastName = employee.LastName };
+                employees.Add(e);
             }
             return View("GetEmployees", employees);
         }
@@ -97,20 +97,32 @@ namespace TaskApp.Controllers
             EmployeeBUS service = new EmployeeBUS();
             var employeeBUS = service.GetEmployeeByName(lastName, firstName);
             EmployeesInView inView = new EmployeesInView { EmployeesForView = new List<EmployeeModelForView>() };
-            foreach(var e in employeeBUS)
+            if (employeeBUS.Count == 0)
             {
                 EmployeeModelForView forView = new EmployeeModelForView
                 {
                     LastName = lastName,
-                    FirstName = firstName,
-                    NumberOfHours = e.NumberOfHours,
-                    TaskName = e.TaskName,
-                    Description = e.Description,
-                    ProjectName = e.ProjectName
+                    FirstName = firstName
                 };
                 inView.EmployeesForView.Add(forView);
             }
-            
+            else
+            {
+                foreach (var e in employeeBUS)
+                {
+                    EmployeeModelForView forView = new EmployeeModelForView
+                    {
+                        LastName = lastName,
+                        FirstName = firstName,
+                        NumberOfHours = e.NumberOfHours,
+                        TaskName = e.TaskName,
+                        Description = e.Description,
+                        ProjectName = e.ProjectName
+                    };
+                    inView.EmployeesForView.Add(forView);
+                }
+            }
+
             return View(inView);
         }
 
@@ -118,11 +130,11 @@ namespace TaskApp.Controllers
         {
             EmployeeBUS service = new EmployeeBUS();
             var employeesBUS = service.GetEmployees();
-            Employees employees = new Employees { EmployeesList = new List<Employee>() };
+            List<Employee> employees = new List<Employee>();
             foreach (var employee in employeesBUS)
             {
                 Employee e = new Employee { FirstName = employee.FirstName, LastName = employee.LastName };
-                employees.EmployeesList.Add(e);
+                employees.Add(e);
             }
             return View(employees);
         }

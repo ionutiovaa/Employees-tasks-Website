@@ -11,7 +11,7 @@
 {
     <div class="form-group">
         @Html.LabelFor(e => e.FirstName)
-        @Html.TextBoxFor(e => e.FirstName, new { @class = "form-control" })
+        @Html.TextBoxFor(e => e.FirstName, new { @class = "form-control", @id = "firstName"})
         @Html.ValidationMessageFor(e => e.FirstName)
     </div><br />
           <div class="form-group">
@@ -28,4 +28,14 @@
                 </div><br />
     <button type="submit" class="btn btn-primary">Save</button>
 
+}
+
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        
+    </script>
 }

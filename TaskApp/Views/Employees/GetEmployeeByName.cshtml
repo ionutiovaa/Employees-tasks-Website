@@ -6,6 +6,9 @@
 
 <h2>@Model.EmployeesForView[0].FirstName @Model.EmployeesForView[0].LastName</h2><br />
 
+@if (!String.IsNullOrEmpty(Model.EmployeesForView[0].TaskName))
+{
+
 <table id="employee" class="table table-bordered table-hover">
     <thead>
         <tr>
@@ -25,3 +28,8 @@
         }
     </tbody>
 </table>
+}
+else
+{
+    <h3>No tasks</h3>
+}
