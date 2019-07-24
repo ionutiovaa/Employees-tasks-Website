@@ -17,14 +17,18 @@ namespace TaskApp.Controllers
             return View();
         }
 
-        public ActionResult GetEmployee(/*int id*/)
+        public ActionResult GetEmployee()
         {
+            string username = Session["User"].ToString();
+            string password = Session["Password"].ToString();
             EmployeeBUS service = new EmployeeBUS();
-            var employeeBUS = service.GetEmployeeById(1);
-            string lastName = employeeBUS.LastName;
-            string firstName = employeeBUS.FirstName;
-            Employee employee = new Employee { LastName = lastName, FirstName = firstName };
-            return View(employee);
+            var userFromDAO = service.GetEmployeeByUsernamePassword(username, password);
+            var employee = new Employee
+            {
+                FirstName = userFromDAO.FirstName,
+                LastName = userFromDAO.LastName
+            };
+            return RedirectToAction("GetEmployeeByName", new { lastName = employee.LastName, firstName = employee.FirstName});
         }
 
         public ActionResult NewEmployee()
@@ -32,6 +36,7 @@ namespace TaskApp.Controllers
             return View();
         }
 
+        [UserAuthorization]
         public ActionResult AddEmployee(Employee employee)
         {
             dynamic e = new ExpandoObject();
@@ -54,6 +59,7 @@ namespace TaskApp.Controllers
             return View("GetEmployees", employees);
         }
 
+        [UserAuthorization]
         public ActionResult DeleteEmployee(string lastName, string firstName)
         {
             EmployeeBUS service = new EmployeeBUS();
@@ -76,7 +82,7 @@ namespace TaskApp.Controllers
             return View("EditEmployee", employee);
         }
 
-        
+        [UserAuthorization]
         public ActionResult EditEmployee(int id, string lastName, string firstName, string username, string password, string userType)
         {
             EmployeeBUS service = new EmployeeBUS();
@@ -125,10 +131,13 @@ namespace TaskApp.Controllers
                     inView.EmployeesForView.Add(forView);
                 }
             }
-
-            return View(inView);
+            if (int.Parse(Session["UserType"].ToString()) == 1)
+                return View(inView);
+            else
+                return View("YourPage", inView);
         }
 
+        [UserAuthorization]
         public ActionResult GetEmployees()
         {
             EmployeeBUS service = new EmployeeBUS();
@@ -140,6 +149,39 @@ namespace TaskApp.Controllers
                 employees.Add(e);
             }
             return View(employees);
+        }
+
+        public ActionResult ChangePassword()
+        {
+            Employee employee = new Employee
+            {
+                Username = Session["User"].ToString()
+            };
+            return View(employee);
+        }
+
+        public ActionResult Change(string username, string password)
+        {
+            string newPassword = password;
+            string pass = Session["Password"].ToString();
+            EmployeeBUS service = new EmployeeBUS();
+            var userFromDAO = service.GetEmployeeByUsernamePassword(username, pass);
+            if (pass.Equals(newPassword))
+            {
+                return View("");
+            }
+            else
+            if (userFromDAO == null)
+            {
+                return View("");
+            }
+            else
+            {
+                service.Change(username, newPassword);
+                if (int.Parse(Session["UserType"].ToString()) == 1)
+                    return RedirectToAction("GetEmployees");
+                else return RedirectToAction("GetEmployee");
+            }
         }
     }
 }

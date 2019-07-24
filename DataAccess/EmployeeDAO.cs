@@ -177,6 +177,52 @@ namespace DataAccess
             return id;
         }
 
+        public Employee GetEmployeeByUsernamePassword(string username, string password)
+        {
+            Employee employee = new Employee();
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "select * from Employee where Username LIKE @username and Password LIKE @password";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@password", password);
+                using(SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        employee.Id = Int32.Parse(reader["Id"].ToString());
+                        employee.LastName = reader["LastName"].ToString();
+                        employee.FirstName = reader["FirstName"].ToString();
+                        employee.UserType = Int32.Parse(reader["UserType"].ToString());
+                    }
+                }
+                connection.Close();
+            }
+            if (String.IsNullOrEmpty(employee.LastName))
+                return null;
+            else
+            {
+                employee.Username = username;
+                employee.Password = password;
+                return employee;
+            }
+        }
+
+        public void Change(string username, string newPassword)
+        {
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "update Employee set Password = @password where Username LIKE @username;";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@password", newPassword);
+                command.Parameters.AddWithValue("@username", username);
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+
         public List<Employee> GetEmployees()
         {
             var employees = new List<Employee>();

@@ -183,7 +183,7 @@
     <Compile Include="Models\EmployeesInView.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserAuthorization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -421,6 +421,9 @@
     <Content Include="Views\Employees\GetEmployeeByName.cshtml" />
     <Content Include="Views\Employees\NewEmployee.cshtml" />
     <Content Include="Views\Employees\EditEmployee.cshtml" />
+    <Content Include="Views\Employees\ChangePassword.cshtml" />
+    <Content Include="Views\Account\ChangePassword.cshtml" />
+    <Content Include="Views\Employees\YourPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

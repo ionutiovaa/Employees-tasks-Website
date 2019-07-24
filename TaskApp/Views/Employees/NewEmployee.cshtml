@@ -10,12 +10,12 @@
 @using (Html.BeginForm("AddEmployee", "Employees"))
 {
     <div class="form-group">
-        @Html.LabelFor(e => e.FirstName)
+        @Html.LabelFor(e => e.FirstName, "First name")
         @Html.TextBoxFor(e => e.FirstName, new { @class = "form-control", @id = "firstName" })
         @Html.ValidationMessageFor(e => e.FirstName)
     </div><br />
     <div class="form-group">
-        @Html.LabelFor(e => e.LastName)
+        @Html.LabelFor(e => e.LastName, "Last name")
         @Html.TextBoxFor(e => e.LastName, new { @class = "form-control" })
         @Html.ValidationMessageFor(e => e.LastName)
     </div><br />
@@ -30,7 +30,7 @@
         @Html.ValidationMessageFor(e => e.Password)
     </div><br />
     <div class="form-group">
-        @Html.LabelFor(e => e.UserType)
+        @Html.LabelFor(e => e.UserType, "User type")
         @Html.DropDownListFor(e => e.UserType, new SelectList(
             new List<string> { "Admin", "User" }
             ), "Select User Type", new { @class = "form-control" })

@@ -29,6 +29,29 @@ namespace Business
             return employee;
         }
 
+        public dynamic GetEmployeeByUsernamePassword(string username, string password)
+        {
+            Employee employeeDAO = _employeeDAO.GetEmployeeByUsernamePassword(username, password);
+            if (employeeDAO == null)
+                return null;
+            else
+            {
+                dynamic employee = new ExpandoObject();
+                employee.Id = employeeDAO.Id;
+                employee.LastName = employeeDAO.LastName;
+                employee.FirstName = employeeDAO.FirstName;
+                employee.Username = employeeDAO.Username;
+                employee.Password = employeeDAO.Password;
+                employee.UserType = employeeDAO.UserType;
+                return employee;
+            }
+        }
+
+        public void Change(string username, string newPassword)
+        {
+            _employeeDAO.Change(username, newPassword);
+        }
+
         public List<dynamic> GetEmployeeByName(string lastName, string firstName)
         {
             return _employeeDAO.GetEmployeeByName(lastName, firstName);

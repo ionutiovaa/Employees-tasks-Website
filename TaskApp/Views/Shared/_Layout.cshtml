@@ -24,7 +24,14 @@
                     @*<li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
-                    <li style="font-size:17px">@Html.ActionLink("Employees", "GetEmployees", "Employees")</li>
+                    @if (Session["User"] != null)
+                    {
+                        <li style="font-size:17px">@Html.ActionLink("Your page", "GetEmployee", "Employees")</li>
+                    }
+                    @if (Session["User"] != null && int.Parse(Session["UserType"].ToString()) == 1)
+                    {
+                        <li style="font-size:17px">@Html.ActionLink("Employees", "GetEmployees", "Employees")</li>
+                    }
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

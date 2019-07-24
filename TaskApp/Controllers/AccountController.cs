@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -76,27 +77,46 @@ namespace TaskApp.Controllers
                 return View(model);
             }
 
-            Employee employee = new Employee { Username = model.Email, Password = model.Password };
             EmployeeBUS service = new EmployeeBUS();
-            //AICI
-
-
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
+            var userFromDAO = service.GetEmployeeByUsernamePassword(model.Email, model.Password);
+            if (userFromDAO == null)
             {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
+                ModelState.AddModelError("", "Invalid login attempt.");
+                return View(model);
             }
+            else
+            {
+                Session["User"] = model.Email;
+                Session["Password"] = model.Password;
+                Session["UserType"] = userFromDAO.UserType.ToString();
+                if (userFromDAO.UserType == 1)
+                {
+                    return RedirectToAction("GetEmployees", "Employees");
+                }
+                else
+                {
+                    return RedirectToAction("GetEmployee", "Employees");
+                }
+            }
+                
+
+
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, change to shouldLockout: true
+            //var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            //switch (result)
+            //{
+            //    case SignInStatus.Success:
+            //        return RedirectToLocal(returnUrl);
+            //    case SignInStatus.LockedOut:
+            //        return View("Lockout");
+            //    case SignInStatus.RequiresVerification:
+            //        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+            //    case SignInStatus.Failure:
+            //    default:
+            //        ModelState.AddModelError("", "Invalid login attempt.");
+            //        return View(model);
+            //}
         }
 
         //
@@ -397,9 +417,12 @@ namespace TaskApp.Controllers
         //
         // POST: /Account/LogOff
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
+            Session.Clear();
+            Session.Abandon();
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index", "Home");
         }
@@ -411,6 +434,13 @@ namespace TaskApp.Controllers
         {
             return View();
         }
+
+        //public ActionResult ChangePassword()
+        //{
+        //    int i = 0;
+        //    i++;
+        //    return View("~/Views/Employees/ChangePassword.cshtml");
+        //}
 
         protected override void Dispose(bool disposing)
         {

@@ -1,0 +1,35 @@
+﻿@model TaskApp.Models.EmployeesInView
+
+@{
+    ViewBag.Title = "YourPage";
+}
+
+<h2>@Model.EmployeesForView[0].FirstName @Model.EmployeesForView[0].LastName</h2><br />
+
+@if (!String.IsNullOrEmpty(Model.EmployeesForView[0].TaskName))
+{
+
+    <table id="employee" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Hours</th>
+                <th>Project</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model.EmployeesForView)
+            {
+                <tr>
+                    <td>@e.TaskName @e.Description</td>
+                    <td>@e.NumberOfHours</td>
+                    <td>@e.ProjectName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h3>No tasks</h3>
+}
