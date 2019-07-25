@@ -19,5 +19,7 @@ namespace DataAccess.Entity
         public int EmployeeId { get; set; }
 
         public int ProjectId { get; set; }
+
+        public DateTime Data { get; set; }
     }
 }

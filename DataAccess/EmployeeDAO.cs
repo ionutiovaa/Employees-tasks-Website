@@ -35,6 +35,28 @@ namespace DataAccess
             return employee;
         }
 
+        public Employee GetEmployeeByUsername(string username)
+        {
+            Employee employee = new Employee();
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "select * from Employee where Username = @username";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@username", username);
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        employee.LastName = reader["LastName"].ToString();
+                        employee.FirstName = reader["FirstName"].ToString();
+                    }
+                }
+                connection.Close();
+            }
+            return employee;
+        }
+
         public string GetPasswordByUser(string username)
         {
             string pass = "";
@@ -144,25 +166,6 @@ namespace DataAccess
             }
         }
 
-        public void AddTask(Job job)
-        {
-            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
-            {
-                DateTime date = DateTime.Now;
-                connection.Open();
-                string query = "insert into Task(Name, Description, NumberOfHours, EmployeeId, ProjectId, Data) values (@name, @description, @nrHours, @employeeId, @projectId, @data);";
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@name", job.Name);
-                command.Parameters.AddWithValue("@description", job.Description);
-                command.Parameters.AddWithValue("@nrHours", job.NumberOfHours);
-                command.Parameters.AddWithValue("@employeeId", job.EmployeeId);
-                command.Parameters.AddWithValue("@projectId", job.ProjectId);
-                command.Parameters.AddWithValue("data", date.ToString("MM/dd/yyyy hh:mm tt"));
-                SqlDataReader reader = command.ExecuteReader();
-                connection.Close();
-            }
-        }
-
         public void DeleteEmployee(string lastName, string firstName)
         {
             using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
@@ -245,25 +248,6 @@ namespace DataAccess
                 employee.Password = password;
                 return employee;
             }
-        }
-
-        public int GetProjectIdByName(string name)
-        {
-            int id = 0;
-            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
-            {
-                connection.Open();
-                string query = "select Id from Project where Name LIKE @name;";
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@name", name);
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    id = Int32.Parse(reader["Id"].ToString());
-                }
-                connection.Close();
-            }
-            return id;
         }
 
         public void Change(string username, string newPassword)

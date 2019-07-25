@@ -2,6 +2,12 @@
 
 @{
     ViewBag.Title = "YourPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ 
+    var fName = Model.EmployeesForView[0].FirstName;
+    var lName = Model.EmployeesForView[0].LastName;
 }
 
 <h2>@Model.EmployeesForView[0].FirstName @Model.EmployeesForView[0].LastName</h2><br />
@@ -28,8 +34,35 @@
             }
         </tbody>
     </table>
+
+    <button onclick="DownloadExcel()" class="btn btn-primary">Export to Excel</button>
 }
 else
 {
     <h3>No tasks</h3>
 }
+
+@section Scripts
+{
+    <script>
+        function DownloadExcel() {
+            $.ajax({
+                type: "POST",
+                url: "ExcelExport",
+                @*data: {
+                    'fName': @fName,
+                    'lName': @lName
+                },*@
+                cache: false,
+                success: function (data) {
+                    window.location = 'Download';
+                },
+                error: function (data) {
+                    console.log("nu");
+                    Materialize.toast("Something went wrong. ", 3000, 'rounded');
+                }
+            });
+        }
+    </script>
+}
+

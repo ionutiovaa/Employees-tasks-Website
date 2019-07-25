@@ -1,4 +1,5 @@
 ﻿@model TaskApp.Models.EmployeesInView
+
 @{
     ViewBag.Title = "GetEmployeeByName";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -9,27 +10,51 @@
 @if (!String.IsNullOrEmpty(Model.EmployeesForView[0].TaskName))
 {
 
-<table id="employee" class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>Task</th>
-            <th>Hours</th>
-            <th>Project</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var e in Model.EmployeesForView)
-        {
+    <table id="employee" class="table table-bordered table-hover">
+        <thead>
             <tr>
-                <td>@e.TaskName @e.Description</td>
-                <td>@e.NumberOfHours</td>
-                <td>@e.ProjectName</td>
+                <th>Task</th>
+                <th>Hours</th>
+                <th>Project</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var e in Model.EmployeesForView)
+            {
+                <tr>
+                    <td>@e.TaskName @e.Description</td>
+                    <td>@e.NumberOfHours</td>
+                    <td>@e.ProjectName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button onclick="DownloadExcel()" class="btn btn-primary">Export to Excel</button>
 }
 else
 {
     <h3>No tasks</h3>
 }
+
+@section Scripts
+{
+    <script>
+    function DownloadExcel() {
+        $.ajax({
+            type: "POST",
+            url: "ExcelExport",
+            data: {fName:@Model.EmployeesForView[0].FirstName, lName:@Model.EmployeesForView[0].LastName},
+            cache: false,
+            success: function (data) {
+                window.location = 'Download';
+            },
+            error: function (data) {
+                console.log("nu");
+                Materialize.toast("Something went wrong. ", 3000, 'rounded');
+            }
+        });
+    }
+    </script>
+}
+

@@ -29,6 +29,15 @@ namespace Business
             return employee;
         }
 
+        public dynamic GetEmployeeByUsername(string username)
+        {
+            Employee employeeDAO = _employeeDAO.GetEmployeeByUsername(username);
+            dynamic employee = new ExpandoObject();
+            employee.FirstName = employeeDAO.FirstName;
+            employee.LastName = employeeDAO.LastName;
+            return employee;
+        }
+
         public dynamic GetEmployeeByUsernamePassword(string username, string password)
         {
             Employee employeeDAO = _employeeDAO.GetEmployeeByUsernamePassword(username, password);
@@ -45,25 +54,6 @@ namespace Business
                 employee.UserType = employeeDAO.UserType;
                 return employee;
             }
-        }
-
-        public string AddTask(dynamic task)
-        {
-            int idProject = _employeeDAO.GetProjectIdByName(task.Project);
-            if (idProject == 0)
-                return "project not found";
-            int idEmployee = _employeeDAO.GetEmployeeByUsernamePassword(task.Username, task.Password).Id;
-
-            Job job = new Job
-            {
-                Name = task.Name,
-                Description = task.Description,
-                NumberOfHours = task.NumberOfHours,
-                EmployeeId = idEmployee,
-                ProjectId = idProject
-            };
-            _employeeDAO.AddTask(job);
-            return "ok";
         }
 
         public string GetPasswordByUser(string username)

@@ -6,6 +6,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TaskApp.Models;
+using OfficeOpenXml;
+using System.IO;
+using System.Data;
+using OfficeOpenXml.Table;
 
 namespace TaskApp.Controllers
 {
@@ -39,6 +43,8 @@ namespace TaskApp.Controllers
         [EmployeeAuthorization]
         public ActionResult AddTask(Job task)
         {
+            EmployeeBUS employeeBUS = new EmployeeBUS();
+            JobBUS service = new JobBUS();
             TempData["returned"] = null;
             dynamic t = new ExpandoObject();
             t.Name = task.Name;
@@ -46,8 +52,7 @@ namespace TaskApp.Controllers
             t.NumberOfHours = task.NumberOfHours;
             t.Project = task.Project;
             t.Username = Session["User"];
-            t.Password = Session["Password"];
-            EmployeeBUS service = new EmployeeBUS();
+            t.Password = employeeBUS.GetPasswordByUser(Session["User"].ToString());
             string returned = service.AddTask(t);
             if (returned.Equals("project not found"))
             {
@@ -147,10 +152,145 @@ namespace TaskApp.Controllers
                     inView.EmployeesForView.Add(forView);
                 }
             }
-            if (int.Parse(Session["UserType"].ToString()) == 1)
-                return View(inView);
-            else
+
+
+            //if (int.Parse(Session["UserType"].ToString()) == 1)
+            //    return View(inView);
+            //else
                 return View("YourPage", inView);
+        }
+
+        public ActionResult ExcelExport(string fName, string lName)
+        {
+            EmployeeBUS service = new EmployeeBUS();
+            string firstName = fName;
+            string lastName = lName;
+            firstName = "John";
+            lastName = "Smith";
+            //string lastName = "";
+            //string firstName = "";
+            //if (int.Parse(Session["UserType"].ToString()) != 1)
+            //{
+            //    var employee = service.GetEmployeeByUsername(Session["User"].ToString());
+            //    lastName = employee.LastName;
+            //    firstName = employee.FirstName;
+            //}
+            //else
+            //{
+            //    firstName = fName;
+            //    lastName = lName;
+            //}
+
+            var employeeBUS = service.GetEmployeeByName(lastName, firstName);
+            EmployeesInView inView = new EmployeesInView { EmployeesForView = new List<EmployeeModelForView>() };
+            if (employeeBUS.Count == 0)
+            {
+                EmployeeModelForView forView = new EmployeeModelForView
+                {
+                    LastName = lastName,
+                    FirstName = firstName
+                };
+                inView.EmployeesForView.Add(forView);
+            }
+            else
+            {
+                foreach (var e in employeeBUS)
+                {
+                    EmployeeModelForView forView = new EmployeeModelForView
+                    {
+                        LastName = lastName,
+                        FirstName = firstName,
+                        NumberOfHours = e.NumberOfHours,
+                        TaskName = e.TaskName,
+                        Description = e.Description,
+                        ProjectName = e.ProjectName
+                    };
+                    inView.EmployeesForView.Add(forView);
+                }
+            }
+            try
+            {
+                DataTable dataTable = new DataTable();
+                if (int.Parse(Session["UserType"].ToString()) != 1)
+                {
+                    //dataTable.Columns.Add("First name", typeof(string));
+                    //dataTable.Columns.Add("Last name", typeof(string));
+                    dataTable.Columns.Add("Task", typeof(string));
+                    dataTable.Columns.Add("Description", typeof(string));
+                    dataTable.Columns.Add("Number of hours", typeof(float));
+                    dataTable.Columns.Add("Project", typeof(string));
+
+                    foreach (var e in inView.EmployeesForView)
+                    {
+                        DataRow row = dataTable.NewRow();
+                        //row[0] = e.FirstName;
+                        //row[1] = e.LastName;
+                        row[0] = e.TaskName;
+                        row[1] = e.Description;
+                        row[2] = e.NumberOfHours;
+                        row[3] = e.ProjectName;
+                        dataTable.Rows.Add(row);
+                    }
+                }
+                else
+                {
+                    dataTable.Columns.Add("First name", typeof(string));
+                    dataTable.Columns.Add("Last name", typeof(string));
+                    dataTable.Columns.Add("Task", typeof(string));
+                    dataTable.Columns.Add("Description", typeof(string));
+                    dataTable.Columns.Add("Number of hours", typeof(float));
+                    dataTable.Columns.Add("Project", typeof(string));
+
+                    foreach (var e in inView.EmployeesForView)
+                    {
+                        DataRow row = dataTable.NewRow();
+                        row[0] = e.FirstName;
+                        row[1] = e.LastName;
+                        row[0] = e.TaskName;
+                        row[1] = e.Description;
+                        row[2] = e.NumberOfHours;
+                        row[3] = e.ProjectName;
+                        dataTable.Rows.Add(row);
+                    }
+                }
+
+                var memoryStream = new MemoryStream();
+                using (var excelPackage = new ExcelPackage(memoryStream))
+                {
+                    var worksheet = excelPackage.Workbook.Worksheets.Add("Sheet1");
+                    worksheet.Cells["A1"].LoadFromDataTable(dataTable, true, TableStyles.None);
+                    worksheet.Cells["A1:AN1"].Style.Font.Bold = true;
+                    worksheet.DefaultRowHeight = 18;
+
+                    worksheet.Column(2).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    worksheet.Column(6).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Column(7).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    worksheet.DefaultColWidth = 20;
+                    worksheet.Column(2).AutoFit();
+
+                    Session["DownloadExcel_FileManager"] = excelPackage.GetAsByteArray();
+                    return Json("", JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public ActionResult Download()
+        {
+
+            if (Session["DownloadExcel_FileManager"] != null)
+            {
+                byte[] data = Session["DownloadExcel_FileManager"] as byte[];
+                return File(data, "application/octet-stream", "FileManager.xlsx");
+            }
+            else
+            {
+                return new EmptyResult();
+            }
         }
 
         [UserAuthorization]
