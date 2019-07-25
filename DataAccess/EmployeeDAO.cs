@@ -35,6 +35,25 @@ namespace DataAccess
             return employee;
         }
 
+        public string GetPasswordByUser(string username)
+        {
+            string pass = "";
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "select Password from Employee where Username LIKE @username;";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@username", username);
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    pass = reader["Password"].ToString();
+                }
+                connection.Close();
+            }
+            return pass;
+        }
+
         public List<dynamic> GetEmployeeByName(string lastName, string firstName)
         {
             List<Job> jobs = new List<Job>();
@@ -58,7 +77,7 @@ namespace DataAccess
                         employee.UserType = Int32.Parse(reader["UserType"].ToString());
                     }
                 }
-                string query2 = "select * from Task where EmployeeId = @id";
+                string query2 = "select * from Task where EmployeeId = @id order by Data desc";
                 SqlCommand command2 = new SqlCommand(query2, connection);
                 command2.Parameters.AddWithValue("@id", employee.Id);
                 using (SqlDataReader reader1 = command2.ExecuteReader())
@@ -120,6 +139,25 @@ namespace DataAccess
                 command.Parameters.AddWithValue("@username", employee.Username);
                 command.Parameters.AddWithValue("@password", employee.Password);
                 command.Parameters.AddWithValue("@userType", employee.UserType);
+                SqlDataReader reader = command.ExecuteReader();
+                connection.Close();
+            }
+        }
+
+        public void AddTask(Job job)
+        {
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                DateTime date = DateTime.Now;
+                connection.Open();
+                string query = "insert into Task(Name, Description, NumberOfHours, EmployeeId, ProjectId, Data) values (@name, @description, @nrHours, @employeeId, @projectId, @data);";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@name", job.Name);
+                command.Parameters.AddWithValue("@description", job.Description);
+                command.Parameters.AddWithValue("@nrHours", job.NumberOfHours);
+                command.Parameters.AddWithValue("@employeeId", job.EmployeeId);
+                command.Parameters.AddWithValue("@projectId", job.ProjectId);
+                command.Parameters.AddWithValue("data", date.ToString("MM/dd/yyyy hh:mm tt"));
                 SqlDataReader reader = command.ExecuteReader();
                 connection.Close();
             }
@@ -207,6 +245,25 @@ namespace DataAccess
                 employee.Password = password;
                 return employee;
             }
+        }
+
+        public int GetProjectIdByName(string name)
+        {
+            int id = 0;
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                connection.Open();
+                string query = "select Id from Project where Name LIKE @name;";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@name", name);
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    id = Int32.Parse(reader["Id"].ToString());
+                }
+                connection.Close();
+            }
+            return id;
         }
 
         public void Change(string username, string newPassword)

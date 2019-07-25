@@ -87,7 +87,6 @@ namespace TaskApp.Controllers
             else
             {
                 Session["User"] = model.Email;
-                Session["Password"] = model.Password;
                 Session["UserType"] = userFromDAO.UserType.ToString();
                 if (userFromDAO.UserType == 1)
                 {

@@ -10,10 +10,10 @@ namespace TaskApp.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "This field is required.")]
         public string LastName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "This field is required.")]
         public string FirstName { get; set; }
 
         [Required]
@@ -22,7 +22,7 @@ namespace TaskApp.Models
         [Required]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "This field is required.")]
         public string UserType { get; set; }
     }
 }

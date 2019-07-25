@@ -20,8 +20,8 @@ namespace TaskApp.Controllers
         public ActionResult GetEmployee()
         {
             string username = Session["User"].ToString();
-            string password = Session["Password"].ToString();
             EmployeeBUS service = new EmployeeBUS();
+            string password = service.GetPasswordByUser(username);
             var userFromDAO = service.GetEmployeeByUsernamePassword(username, password);
             var employee = new Employee
             {
@@ -29,6 +29,33 @@ namespace TaskApp.Controllers
                 LastName = userFromDAO.LastName
             };
             return RedirectToAction("GetEmployeeByName", new { lastName = employee.LastName, firstName = employee.FirstName});
+        }
+
+        public ActionResult NewTask()
+        {
+            return View();
+        }
+
+        [EmployeeAuthorization]
+        public ActionResult AddTask(Job task)
+        {
+            TempData["returned"] = null;
+            dynamic t = new ExpandoObject();
+            t.Name = task.Name;
+            t.Description = task.Description;
+            t.NumberOfHours = task.NumberOfHours;
+            t.Project = task.Project;
+            t.Username = Session["User"];
+            t.Password = Session["Password"];
+            EmployeeBUS service = new EmployeeBUS();
+            string returned = service.AddTask(t);
+            if (returned.Equals("project not found"))
+            {
+                TempData["returned"] = "not";
+                return View("NewTask");
+            }
+            else
+                return RedirectToAction("GetEmployee");
         }
 
         public ActionResult NewEmployee()
@@ -49,14 +76,7 @@ namespace TaskApp.Controllers
             else e.UserType = 2;
             EmployeeBUS service = new EmployeeBUS();
             service.AddEmployee(e);
-            var employeesBUS = service.GetEmployees();
-            List<Employee> employees = new List<Employee>();
-            foreach (var empl in employeesBUS)
-            {
-                Employee em = new Employee { FirstName = empl.FirstName, LastName = empl.LastName };
-                employees.Add(em);
-            }
-            return View("GetEmployees", employees);
+            return RedirectToAction("GetEmployees");
         }
 
         [UserAuthorization]
@@ -64,18 +84,14 @@ namespace TaskApp.Controllers
         {
             EmployeeBUS service = new EmployeeBUS();
             service.DeleteEmployee(lastName, firstName);
-            var employeesBUS = service.GetEmployees();
-            List<Employee> employees = new List<Employee>();
-            foreach (var employee in employeesBUS)
-            {
-                Employee e = new Employee { FirstName = employee.FirstName, LastName = employee.LastName };
-                employees.Add(e);
-            }
-            return View("GetEmployees", employees);
+            return RedirectToAction("GetEmployees");
         }
 
         public ActionResult GetIdEmployee(string lastName, string firstName, string username, string password, string userType)
         {
+            string l = lastName;
+            string f = firstName;
+            string u = userType;
             EmployeeBUS service = new EmployeeBUS();
             int id = service.GetIdEmployee(username, password);
             Employee employee = new Employee { Id = id, LastName = lastName, FirstName = firstName, Username = username, Password = password, UserType = userType };
@@ -98,7 +114,7 @@ namespace TaskApp.Controllers
                 Employee e = new Employee { FirstName = employee.FirstName, LastName = employee.LastName };
                 employees.Add(e);
             }
-            return View("GetEmployees", employees);
+            return RedirectToAction("GetEmployees");
         }
 
         public ActionResult GetEmployeeByName(string lastName, string firstName)
@@ -162,22 +178,21 @@ namespace TaskApp.Controllers
 
         public ActionResult Change(string username, string password)
         {
+            TempData["pass"] = null;
             string newPassword = password;
-            string pass = Session["Password"].ToString();
+            //string pass = Session["Password"].ToString();
             EmployeeBUS service = new EmployeeBUS();
-            var userFromDAO = service.GetEmployeeByUsernamePassword(username, pass);
+            string pass = service.GetPasswordByUser(username);
+            //var userFromDAO = service.GetEmployeeByUsernamePassword(username, pass);
             if (pass.Equals(newPassword))
             {
-                return View("");
-            }
-            else
-            if (userFromDAO == null)
-            {
-                return View("");
+                TempData["pass"] = "same";
+                return View("ChangePassword");
             }
             else
             {
                 service.Change(username, newPassword);
+                //Session["Password"] = newPassword;
                 if (int.Parse(Session["UserType"].ToString()) == 1)
                     return RedirectToAction("GetEmployees");
                 else return RedirectToAction("GetEmployee");

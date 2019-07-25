@@ -47,6 +47,30 @@ namespace Business
             }
         }
 
+        public string AddTask(dynamic task)
+        {
+            int idProject = _employeeDAO.GetProjectIdByName(task.Project);
+            if (idProject == 0)
+                return "project not found";
+            int idEmployee = _employeeDAO.GetEmployeeByUsernamePassword(task.Username, task.Password).Id;
+
+            Job job = new Job
+            {
+                Name = task.Name,
+                Description = task.Description,
+                NumberOfHours = task.NumberOfHours,
+                EmployeeId = idEmployee,
+                ProjectId = idProject
+            };
+            _employeeDAO.AddTask(job);
+            return "ok";
+        }
+
+        public string GetPasswordByUser(string username)
+        {
+            return _employeeDAO.GetPasswordByUser(username);
+        }
+
         public void Change(string username, string newPassword)
         {
             _employeeDAO.Change(username, newPassword);
