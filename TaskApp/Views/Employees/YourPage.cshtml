@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@{ 
+@{
     var fName = Model.EmployeesForView[0].FirstName;
     var lName = Model.EmployeesForView[0].LastName;
 }
@@ -35,20 +35,83 @@
         </tbody>
     </table>
 
-    <button onclick="DownloadExcel()" class="btn btn-primary">Export to Excel</button>
+    <button style="background-color: limegreen" onclick="DownloadExcel()" class="btn btn-primary">Export all to Excel</button><br /><br /><br />
+
+    using (Html.BeginForm(/*null, null, FormMethod.Get, new { id = "dateForm"}*/))
+    {
+        <br />
+        <span>
+            @Html.LabelFor(m => m.StartDate, "Start Date: ")
+            @Html.EditorFor(m => m.StartDate, new { htmlAttributes = new { @id = "startD", @class = "datepicker" } })
+        </span><p></p>
+        <span>
+            @Html.LabelFor(m => m.EndDate, "End Date: ")
+            @Html.EditorFor(m => m.EndDate, new { htmlAttributes = new { @id = "endD", @class = "datepicker" } })
+            <button type="button" onclick="sendData()">OK</button>
+        </span>
+    }
+    <br />
+    <button style="background-color: limegreen;" onclick="DownloadExcelDate()" class="btn btn-primary">Export to Excel between dates</button>
+    @*if (TempData["notData"] != null && TempData["notData"].Equals("notOk"))
+        {
+            <p style="color: red">No tasks between these dates.</p>
+        }*@
 }
 else
 {
     <h3>No tasks</h3>
 }
 
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
 @section Scripts
 {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
     <script>
-        @*var data = JSON.stringify({ 
-                 'fName': @fName,
-                 'lName':@lName
-               });*@
+
+
+    $(document).ready(function () {
+        $(".datepicker").val('');
+
+        //$.validator.addMethod("checkDate", function () {
+        //    start = $("#startD").val();
+        //    end = $("#endD").val();
+        //    var yearStart = start.substring(0, 3);
+        //    var yearEnd = end.substring(0, 3);
+        //    var monthStart = start.substring(5, 6);
+        //    var monthEnd = end.substring(5, 6);
+        //    var dayStart = start.substring(8, 9);
+        //    var dayEnd = end.substring(8, 9);
+        //    var i = 0;
+        //    if (parseInt(yearStart) > parseInt(yearEnd))
+        //        i = 1;
+        //    else
+        //        if (parseInt(yearStart) == parseInt(yearEnd)) {
+        //            if (parseInt(monthStart > parseInt(monthEnd)))
+        //                i = 1;
+        //            else {
+        //                if (parseInt(monthStart == parseInt(monthEnd)))
+        //                    if (parseInt(dayStart) >= parseInt(dayEnd))
+        //                        i = 1;
+        //            }
+        //        }
+        //    return (i == 0);
+        //}, "These dates are invalid.");
+
+        $(".datepicker").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "2010: @DateTime.Now.Year",
+            minDate: new Date(2018, 10, 12),
+            maxDate: new Date(@DateTime.Now.Year, @DateTime.Now.Month-1, @DateTime.Now.Day),
+            showOn: "both"
+            
+        });
+    });
 
         function DownloadExcel() {
             $.ajax({
@@ -58,7 +121,6 @@ else
                     fName: "@fName",
                     lName: "@lName"
                 },
-                //data: data,
                 cache: false,
                 success: function (data) {
                     window.location = 'Download';
@@ -68,7 +130,55 @@ else
                     Materialize.toast("Something went wrong. ", 3000, 'rounded');
                 }
             });
-        }
+            }
+
+    function DownloadExcelDate() {
+        start = $("#startD").val();
+        end = $("#endD").val();
+            $.ajax({
+                type: "GET",
+                url: "ExcelExportDate",
+                data: {
+                    fName: "@fName",
+                    lName: "@lName",
+                    startDate: start,
+                    endDate: end
+                },
+                cache: false,
+                success: function (data) {
+                    window.location = 'Download';
+                },
+                error: function (data) {
+                    console.log("nu");
+                    Materialize.toast("Something went wrong. ", 3000, 'rounded');
+                }
+            });
+            }
+
+    function sendData() {
+        console.log("da");
+        start = $("#startD").val();
+        end = $("#endD").val();
+        $.ajax({
+            type: "GET",
+            url: "ValidateDate",
+            data: {
+                fName: "@fName",
+                lName: "@lName",
+                startDate: start,
+                endDate: end
+            },
+            success: {
+
+            },
+            error: {
+
+            },
+            cache: false
+        });
+    }
+
+
     </script>
 }
 

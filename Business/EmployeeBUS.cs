@@ -71,6 +71,11 @@ namespace Business
             return _employeeDAO.GetEmployeeByName(lastName, firstName);
         }
 
+        public List<dynamic> GetEmployeeByNameDate(string lastName, string firstName, string startDate, string endDate)
+        {
+            return _employeeDAO.GetEmployeeByNameDate(lastName, firstName, startDate, endDate);
+        }
+
         public void AddEmployee(dynamic employee)
         {
             _employeeDAO.AddEmployee(employee);

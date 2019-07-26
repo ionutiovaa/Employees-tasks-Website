@@ -10,6 +10,7 @@ using OfficeOpenXml;
 using System.IO;
 using System.Data;
 using OfficeOpenXml.Table;
+using System.Globalization;
 
 namespace TaskApp.Controllers
 {
@@ -152,11 +153,6 @@ namespace TaskApp.Controllers
                     inView.EmployeesForView.Add(forView);
                 }
             }
-
-
-            //if (int.Parse(Session["UserType"].ToString()) == 1)
-            //    return View(inView);
-            //else
                 return View("YourPage", inView);
         }
 
@@ -165,22 +161,6 @@ namespace TaskApp.Controllers
             EmployeeBUS service = new EmployeeBUS();
             string firstName = fName;
             string lastName = lName;
-            //firstName = "John";
-            //lastName = "Smith";
-            //string lastName = "";
-            //string firstName = "";
-            //if (int.Parse(Session["UserType"].ToString()) != 1)
-            //{
-            //    var employee = service.GetEmployeeByUsername(Session["User"].ToString());
-            //    lastName = employee.LastName;
-            //    firstName = employee.FirstName;
-            //}
-            //else
-            //{
-            //    firstName = fName;
-            //    lastName = lName;
-            //}
-
             var employeeBUS = service.GetEmployeeByName(lastName, firstName);
             EmployeesInView inView = new EmployeesInView { EmployeesForView = new List<EmployeeModelForView>() };
             if (employeeBUS.Count == 0)
@@ -212,9 +192,7 @@ namespace TaskApp.Controllers
             {
                 DataTable dataTable = new DataTable();
                 if (int.Parse(Session["UserType"].ToString()) != 1)
-                {
-                    //dataTable.Columns.Add("First name", typeof(string));
-                    //dataTable.Columns.Add("Last name", typeof(string));
+                {                    
                     dataTable.Columns.Add("Task", typeof(string));
                     dataTable.Columns.Add("Description", typeof(string));
                     dataTable.Columns.Add("Number of hours", typeof(float));
@@ -223,8 +201,140 @@ namespace TaskApp.Controllers
                     foreach (var e in inView.EmployeesForView)
                     {
                         DataRow row = dataTable.NewRow();
-                        //row[0] = e.FirstName;
-                        //row[1] = e.LastName;
+                        row[0] = e.TaskName;
+                        row[1] = e.Description;
+                        row[2] = e.NumberOfHours;
+                        row[3] = e.ProjectName;
+                        dataTable.Rows.Add(row);
+                    }
+                }
+                else
+                {
+                    dataTable.Columns.Add("First name", typeof(string));
+                    dataTable.Columns.Add("Last name", typeof(string));
+                    dataTable.Columns.Add("Task", typeof(string));
+                    dataTable.Columns.Add("Description", typeof(string));
+                    dataTable.Columns.Add("Number of hours", typeof(float));
+                    dataTable.Columns.Add("Project", typeof(string));
+
+                    foreach (var e in inView.EmployeesForView)
+                    {
+                        DataRow row = dataTable.NewRow();
+                        row[0] = e.FirstName;
+                        row[1] = e.LastName;
+                        row[2] = e.TaskName;
+                        row[3] = e.Description;
+                        row[4] = e.NumberOfHours;
+                        row[5] = e.ProjectName;
+                        dataTable.Rows.Add(row);
+                    }
+                }
+
+                var memoryStream = new MemoryStream();
+                using (var excelPackage = new ExcelPackage(memoryStream))
+                {
+                    var worksheet = excelPackage.Workbook.Worksheets.Add("Sheet1");
+                    worksheet.Cells["A1"].LoadFromDataTable(dataTable, true, TableStyles.None);
+                    worksheet.Cells["A1:AN1"].Style.Font.Bold = true;
+                    worksheet.DefaultRowHeight = 18;
+
+                    worksheet.Column(2).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    worksheet.Column(6).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Column(7).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    worksheet.DefaultColWidth = 20;
+                    worksheet.Column(2).AutoFit();
+
+                    Session["DownloadExcel_FileManager"] = excelPackage.GetAsByteArray();
+                    return Json("", JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        //public ActionResult ValidateDate(string fName, string lName, DateTime startDate, DateTime endDate)
+        //{
+        //    string firstName = fName;
+        //    string lastName = lName;
+        //    EmployeeBUS service = new EmployeeBUS();
+        //    EmployeesInView inView = new EmployeesInView { EmployeesForView = new List<EmployeeModelForView>() };
+        //    EmployeeModelForView forView = new EmployeeModelForView
+        //    {
+        //        LastName = lastName,
+        //        FirstName = firstName
+        //    };
+        //    inView.EmployeesForView.Add(forView);
+        //    TempData["notData"] = null;
+        //    int differenceBetweenDates = DateTime.Compare(startDate, endDate);
+        //    if (differenceBetweenDates >= 0)
+        //        TempData["notData"] = "notOk";
+        //    return View("YourPage", inView);
+        //}
+
+        public ActionResult ExcelExportDate(string fName, string lName, DateTime startDate, DateTime endDate)
+        {
+            //TempData["notData"] = null;
+            EmployeeBUS service = new EmployeeBUS();
+            string firstName = fName;
+            string lastName = lName;
+            string start = startDate.ToString("yyyy-MM-dd");
+            string end = endDate.ToString("yyyy-MM-dd");
+            EmployeesInView inView = new EmployeesInView { EmployeesForView = new List<EmployeeModelForView>() };
+            int differenceBetweenDates = DateTime.Compare(startDate, endDate);
+            if (differenceBetweenDates >= 0)
+            {
+                //TempData["notData"] = "notOk";
+                EmployeeModelForView forView = new EmployeeModelForView
+                {
+                    LastName = lastName,
+                    FirstName = firstName
+                };
+                inView.EmployeesForView.Add(forView);
+                return View("YourPage", inView);
+            }
+            var employeeBUS = service.GetEmployeeByNameDate(lastName, firstName, start, end);
+            if (employeeBUS.Count == 0)
+            {
+                EmployeeModelForView forView = new EmployeeModelForView
+                {
+                    LastName = lastName,
+                    FirstName = firstName
+                };
+                inView.EmployeesForView.Add(forView);
+                return View("YourPage", inView);
+            }
+            else
+            {
+                foreach (var e in employeeBUS)
+                {
+                    EmployeeModelForView forView = new EmployeeModelForView
+                    {
+                        LastName = lastName,
+                        FirstName = firstName,
+                        NumberOfHours = e.NumberOfHours,
+                        TaskName = e.TaskName,
+                        Description = e.Description,
+                        ProjectName = e.ProjectName
+                    };
+                    inView.EmployeesForView.Add(forView);
+                }
+            }
+            try
+            {
+                DataTable dataTable = new DataTable();
+                if (int.Parse(Session["UserType"].ToString()) != 1)
+                {
+                    dataTable.Columns.Add("Task", typeof(string));
+                    dataTable.Columns.Add("Description", typeof(string));
+                    dataTable.Columns.Add("Number of hours", typeof(float));
+                    dataTable.Columns.Add("Project", typeof(string));
+
+                    foreach (var e in inView.EmployeesForView)
+                    {
+                        DataRow row = dataTable.NewRow();
                         row[0] = e.TaskName;
                         row[1] = e.Description;
                         row[2] = e.NumberOfHours;
@@ -320,10 +430,8 @@ namespace TaskApp.Controllers
         {
             TempData["pass"] = null;
             string newPassword = password;
-            //string pass = Session["Password"].ToString();
             EmployeeBUS service = new EmployeeBUS();
             string pass = service.GetPasswordByUser(username);
-            //var userFromDAO = service.GetEmployeeByUsernamePassword(username, pass);
             if (pass.Equals(newPassword))
             {
                 TempData["pass"] = "same";
@@ -332,7 +440,6 @@ namespace TaskApp.Controllers
             else
             {
                 service.Change(username, newPassword);
-                //Session["Password"] = newPassword;
                 if (int.Parse(Session["UserType"].ToString()) == 1)
                     return RedirectToAction("GetEmployees");
                 else return RedirectToAction("GetEmployee");

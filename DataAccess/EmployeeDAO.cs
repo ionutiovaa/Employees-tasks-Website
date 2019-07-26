@@ -76,6 +76,81 @@ namespace DataAccess
             return pass;
         }
 
+        public List<dynamic> GetEmployeeByNameDate(string lastName, string firstName, string startDate, string endDate)
+        {
+            List<Job> jobs = new List<Job>();
+            List<Project> projects = new List<Project>();
+            List<dynamic> tasks = new List<dynamic>();
+            using (SqlConnection connection = new SqlConnection(DbConnection.connectionString))
+            {
+                Employee employee = new Employee();
+                connection.Open();
+                string query1 = "select * from Employee where LastName LIKE @lastName and FirstName LIKE @FirstName";
+                SqlCommand command1 = new SqlCommand(query1, connection);
+                command1.Parameters.AddWithValue("@lastName", lastName);
+                command1.Parameters.AddWithValue("@firstName", firstName);
+                using (SqlDataReader reader = command1.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        employee.Id = Int32.Parse(reader["Id"].ToString());
+                        employee.FirstName = firstName;
+                        employee.LastName = lastName;
+                        employee.UserType = Int32.Parse(reader["UserType"].ToString());
+                    }
+                }
+                string query2 = "select * from Task where EmployeeId = @id and Data between @startDate and @endDate order by Data desc";
+                SqlCommand command2 = new SqlCommand(query2, connection);
+                command2.Parameters.AddWithValue("@id", employee.Id);
+                command2.Parameters.AddWithValue("@startDate", startDate);
+                command2.Parameters.AddWithValue("@endDate", endDate);
+                using (SqlDataReader reader1 = command2.ExecuteReader())
+                {
+                    while (reader1.Read())
+                    {
+                        Job job = new Job
+                        {
+                            Id = Int32.Parse(reader1["Id"].ToString()),
+                            Name = reader1["Name"].ToString(),
+                            Description = reader1["Description"].ToString(),
+                            NumberOfHours = float.Parse(reader1["NumberOfHours"].ToString()),
+                            EmployeeId = employee.Id,
+                            ProjectId = Int32.Parse(reader1["ProjectId"].ToString())
+                        };
+                        jobs.Add(job);
+                    }
+                }
+                foreach (var j in jobs)
+                {
+                    string query3 = "select * from Project where Id = @idp";
+                    SqlCommand command3 = new SqlCommand(query3, connection);
+                    command3.Parameters.AddWithValue("@idp", j.ProjectId);
+                    using (SqlDataReader reader2 = command3.ExecuteReader())
+                    {
+                        while (reader2.Read())
+                        {
+                            Project project = new Project
+                            {
+                                Id = j.ProjectId,
+                                Name = reader2["Name"].ToString()
+                            };
+                            projects.Add(project);
+                            dynamic task = new ExpandoObject();
+                            task.LastName = employee.LastName;
+                            task.FirstName = employee.FirstName;
+                            task.TaskName = j.Name;
+                            task.Description = j.Description;
+                            task.NumberOfHours = j.NumberOfHours;
+                            task.ProjectName = reader2["Name"].ToString();
+                            tasks.Add(task);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return tasks;
+        }
+
         public List<dynamic> GetEmployeeByName(string lastName, string firstName)
         {
             List<Job> jobs = new List<Job>();

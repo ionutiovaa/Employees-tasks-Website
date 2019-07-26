@@ -33,7 +33,7 @@
                         <li style="font-size:17px">@Html.ActionLink("Employees", "GetEmployees", "Employees")</li>
                     }
                     @if (Session["User"] != null && int.Parse(Session["UserType"].ToString()) == 2)
-                    {
+                        {
                         <li style="font-size:17px">@Html.ActionLink("New task", "NewTask", "Employees")</li>
                     }
                 </ul>
