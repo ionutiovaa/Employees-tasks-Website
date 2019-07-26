@@ -165,8 +165,8 @@ namespace TaskApp.Controllers
             EmployeeBUS service = new EmployeeBUS();
             string firstName = fName;
             string lastName = lName;
-            firstName = "John";
-            lastName = "Smith";
+            //firstName = "John";
+            //lastName = "Smith";
             //string lastName = "";
             //string firstName = "";
             //if (int.Parse(Session["UserType"].ToString()) != 1)
@@ -246,10 +246,10 @@ namespace TaskApp.Controllers
                         DataRow row = dataTable.NewRow();
                         row[0] = e.FirstName;
                         row[1] = e.LastName;
-                        row[0] = e.TaskName;
-                        row[1] = e.Description;
-                        row[2] = e.NumberOfHours;
-                        row[3] = e.ProjectName;
+                        row[2] = e.TaskName;
+                        row[3] = e.Description;
+                        row[4] = e.NumberOfHours;
+                        row[5] = e.ProjectName;
                         dataTable.Rows.Add(row);
                     }
                 }

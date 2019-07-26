@@ -45,14 +45,20 @@ else
 @section Scripts
 {
     <script>
+        @*var data = JSON.stringify({ 
+                 'fName': @fName,
+                 'lName':@lName
+               });*@
+
         function DownloadExcel() {
             $.ajax({
-                type: "POST",
+                type: "GET",
                 url: "ExcelExport",
-                @*data: {
-                    'fName': @fName,
-                    'lName': @lName
-                },*@
+                data: {
+                    fName: "@fName",
+                    lName: "@lName"
+                },
+                //data: data,
                 cache: false,
                 success: function (data) {
                     window.location = 'Download';
